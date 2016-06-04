@@ -18,6 +18,8 @@
  *
  ******************************************************************************/
 
+#include <linux/compat.h>
+
 #ifdef CONFIG_GPIO_WAKEUP
 #include <linux/gpio.h>
 #endif
@@ -32,6 +34,10 @@
 #include <linux/wifi_tiwlan.h>
 #endif
 #endif /* defined(RTW_ENABLE_WIFI_CONTROL_FUNC) */
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 0, 0))
+#define strnicmp strncasecmp
+#endif
 
 #ifdef CONFIG_GPIO_WAKEUP
 #include <linux/interrupt.h>
@@ -570,7 +576,7 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 		goto exit;
 	}
 #ifdef CONFIG_COMPAT
-	if (is_compat_task()) {
+	if (in_compat_syscall()) {
 		/* User space is 32-bit, use compat ioctl */
 		compat_android_wifi_priv_cmd compat_priv_cmd;
 
